@@ -8,14 +8,21 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use App\Models\User;
 
 class AuthenticatedSessionController extends Controller
 {
     /**
      * Display the login view.
      */
-    public function create(): View
-    {
+    public function create(): View     {
+        // Check if there are no users in the database
+        // If there are no users, redirect to the first-time user registration page
+    
+        $numberOfUsers = User::count();
+        if($numberOfUsers === 0) {
+            return view('auth.first-user');
+        }
         return view('auth.login');
     }
 

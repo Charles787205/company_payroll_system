@@ -18,7 +18,10 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
+        'first_name',
+        'middle_name',
+        'last_name',
+        'age',
         'email',
         'password',
     ];
@@ -45,4 +48,26 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Define the relationship with the Employee model.
+     */
+    public function employee()
+    {
+        return $this->hasOne(Employee::class);
+    }
+
+    
+
+    /**
+     * Get the full name of the user.
+     *
+     * @return string
+     */
+    public function getFullName(): string
+    {
+        return trim("{$this->first_name} {$this->middle_name} {$this->last_name}");
+    }
+
+    
 }
