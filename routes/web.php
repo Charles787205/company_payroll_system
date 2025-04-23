@@ -7,20 +7,20 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\PayrollAdminController;
 use App\Http\Controllers\LoanOrDeductionController;
 use App\Http\Controllers\LoansAndDeductionsController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\CheckUserPosition;
 
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+
 Route::post('first-time-user-registration', [EmployeeController::class, 'registerFirstUserAsAdmin'])->name('first-time-user.registration');
 Route::middleware(['auth'])->group(function () {
     
     Route::middleware([CheckUserPosition::class])->group(function () {
         Route::get('/', function () {
-            return view('index');
-        });
+            return redirect()->route('dashboard');
+        })->name('home');
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::resource('employees', EmployeeController::class);
         Route::resource('positions', PositionController::class);
         Route::resource('attendance', AttendanceController::class);

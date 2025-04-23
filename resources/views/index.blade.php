@@ -1,6 +1,6 @@
 <x-app-layout>
   <!-- General Report -->
-  @include('index.generalReport')
+  <x-general-report />
   <!-- End General Report -->
 
   <!-- strat Analytics -->

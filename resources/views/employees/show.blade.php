@@ -75,7 +75,7 @@
         </select>
       </div>
       <div class="mb-4">
-        <label for="name" class="block font-medium">Name</label>
+        <label for="name" class="block font-medium">Name </label>
         <input type="text" name="name" id="name"
           class="rounded shadow-inner px-2 shadow-neutral-700 border form-input mt-1 block w-full"
           placeholder="Enter name (e.g., Car Loan, Health Deduction)">
