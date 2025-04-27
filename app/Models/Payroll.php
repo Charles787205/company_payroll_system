@@ -42,5 +42,9 @@ class Payroll extends Model
     {
         return $this->hasMany(Attendance::class);
     }
+    public function getWorkedAttendances()
+    {
+        return $this->attendances()->whereNotNull('time_in')->whereNotNull('time_out');
+    }
     
 }

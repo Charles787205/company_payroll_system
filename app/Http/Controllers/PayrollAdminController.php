@@ -6,6 +6,8 @@ use App\Models\Payroll;
 use App\Models\Employee;
 use App\Models\LoanOrDeduction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class PayrollAdminController extends Controller
 {
@@ -110,5 +112,51 @@ class PayrollAdminController extends Controller
         return response()->json([
             'attendances' => $attendances,
         ]);
+    }
+    public function setPayrollPaid(Payroll $payroll)
+    {
+        // Ensure the payroll is in a pending or approved state before marking it as paid
+        if (!in_array($payroll->status, ['pending', 'approved'])) {
+            return redirect()->route('payrolls.index')->with('error', 'Only pending or approved payrolls can be marked as paid.');
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // Fetch the employee's deductions
+            $deductions = $payroll->employee->loansAndDeductions;
+
+            // Calculate the total deductions
+            $totalDeductions = $deductions->sum('amount');
+
+            // Update the payroll amount by subtracting the deductions
+            $payroll->amount -= $totalDeductions;
+
+            // Ensure the payroll amount is not negative
+            if ($payroll->amount < 0) {
+                $payroll->amount = 0;
+            }
+
+            // Update the payroll status to "paid"
+            $payroll->status = Payroll::STATUS_PAID;
+            $payroll->save();
+
+            // Add deductions to the employee_deductions table
+            foreach ($deductions as $deduction) {
+                $payroll->employee->employeeDeductions()->create([
+                    'loans_and_deductions_id' => $deduction->id, // Corrected column name
+                    'deduction_amount' => $deduction->amount,   // Corrected to match the table structure
+                    'date' => now(),
+                ]);
+            }
+
+            DB::commit();
+
+            return redirect()->route('payrolls.index')->with('success', 'Payroll marked as paid successfully.');
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error('Failed to mark payroll as paid: ' . $e->getMessage());
+            return redirect()->route('payrolls.index')->with('error', 'Failed to mark payroll as paid.');
+        }
     }
 }

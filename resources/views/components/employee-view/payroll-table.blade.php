@@ -9,8 +9,8 @@
     <table class="table-fixed w-full">
       <thead class="text-left">
         <tr>
-          <th class="w-1/4 pb-10 text-sm font-extrabold tracking-wide">Employee</th>
-          <th class="w-1/4 pb-10 text-sm font-extrabold tracking-wide text-right">Position</th>
+          <th class="w-1/4 pb-10 text-sm font-extrabold tracking-wide">From Date</th>
+          <th class="w-1/4 pb-10 text-sm font-extrabold tracking-wide text-right">To Date</th>
           <th class="w-1/4 pb-10 text-sm font-extrabold tracking-wide text-right">Days Worked</th>
           <th class="w-1/4 pb-10 text-sm font-extrabold tracking-wide text-right">Base Salary</th>
           <th class="w-1/4 pb-10 text-sm font-extrabold tracking-wide text-right">Deductions</th>
@@ -22,14 +22,14 @@
       <tbody class="text-left text-gray-600">
         @foreach ($payrolls as $payroll)
         <tr>
-          <!-- Employee Name -->
-          <th class="w-1/4 mb-4 text-xs font-extrabold tracking-wider flex flex-row items-center">
-            <p class="ml-3 name-1">{{ $payroll->employee->user->getFullName() }}</p>
+          <!-- From Date -->
+          <th class="w-1/4 mb-4 text-xs font-extrabold tracking-wider">
+            {{ $payroll->from_date}}
           </th>
 
-          <!-- Position -->
+          <!-- To Date -->
           <th class="w-1/4 mb-4 text-xs font-extrabold tracking-wider text-right">
-            {{ $payroll->employee->position->title }}
+            {{ $payroll->to_date}}
           </th>
 
           <!-- Days Worked -->
@@ -60,20 +60,14 @@
           <!-- Actions -->
           <th class="w-1/4 mb-4 text-xs font-extrabold tracking-wider text-right">
             <div class="flex justify-end space-x-2">
-              <!-- View Button -->
-              <button class="text-blue-500 hover:text-blue-700 view-attendance-btn" data-id="{{ $payroll->id }}"
-                data-status="{{ $payroll->status }}">
+              <button class="text-blue-500 hover:text-blue-700 view-attendance-btn" data-id="{{ $payroll->id }}">
                 View
               </button>
 
-              <!-- Pay Salary Button -->
-              @if ($payroll->status !== 'paid')
-              <form action="{{ route('payrolls.setPaid', $payroll->id) }}" method="POST">
-                @csrf
-                <button type="submit" class="text-green-500 hover:text-green-700">
-                  Pay Salary
-                </button>
-              </form>
+              @if ($payroll->status === 'paid')
+              <a href="{{ route('payroll.download-pdf', $payroll->id) }}" class="text-green-500 hover:text-green-700">
+                Print
+              </a>
               @endif
             </div>
           </th>
@@ -85,42 +79,24 @@
   </div>
 </div>
 
-<x-payroll.attendance-modal :payrolls="$payrolls" />
+<x-employee-view.attendance-modal />
 
 <script>
-  function updateButtonState(status) {
-    const approveButton = document.getElementById('approve-attendance');
-    const rejectButton = document.getElementById('reject-attendance');
-
-    if (status.toLowerCase() != 'pending') {
-      approveButton.disabled = true;
-      rejectButton.disabled = true;
-    } else {
-      approveButton.disabled = false;
-      rejectButton.disabled = false;
-    }
-  }
-  function setStatusAndSubmit(status) {
-    document.getElementById('attendance-status').value = status;
-    document.getElementById('update-status-form').submit();
-  }
   document.addEventListener('DOMContentLoaded', function () {
     const modal = document.getElementById('attendance-modal');
     const closeModal = document.getElementById('close-modal');
     const attendanceTable = document.getElementById('attendance-table');
     const payrollIdSpan = document.getElementById('payroll-id');
 
-    // Open modal and fetch attendance data
+    // Open modal and fetch payroll data
     document.querySelectorAll('.view-attendance-btn').forEach(button => {
       button.addEventListener('click', function () {
         const payrollId = this.getAttribute('data-id');
-        const status = this.getAttribute('data-status');
-        // Set the payroll ID in the modal title
+        console.log(`/employee-view/${payrollId}/attendances`)
         payrollIdSpan.textContent = payrollId;
-        console.log(payrollId)
 
-        // Fetch attendance data
-        fetch(`/payrolls/${payrollId}/attendances`)
+        // Fetch payroll data
+        fetch(`/employee-view/${payrollId}/attendances`)
           .then(response => response.json())
           .then(data => {
             // Clear existing table rows
@@ -137,24 +113,11 @@
               `;
               attendanceTable.insertAdjacentHTML('beforeend', row);
             });
-            updateButtonState(status);
-
-
 
             modal.classList.remove('hidden');
-            const updateForm = document.getElementById('update-status-form');
-            updateForm.action = `/payrolls/${payrollId}/update-status`;
-            updateForm.addEventListener("submit", function (event) {
-              event.preventDefault(); // Prevent the default form submission
-              const status = document.getElementById('attendance-status').value;
-
-              if (status) {
-                setStatusAndSubmit(status);
-              }
-            });
           })
           .catch(error => {
-            console.error('Error fetching attendance data:', error);
+            console.error('Error fetching payroll data:', `/employee-view/${payrollId} / attendances`);
           });
       });
     });

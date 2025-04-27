@@ -17,8 +17,10 @@ class CheckUserPosition
 
             if ($employee && strtolower($employee->position->title) == 'admin') { 
                 return $next($request);
+            } if($employee && strtolower($employee->position->title) != 'admin') {
+               return redirect()->route('employee-view.index')->with('error', 'You do not have permission to access this page.');
             } else {
-                abort(403, 'Unauthorized');
+                return redirect()->route('employee-view.index')->with('error', 'You do not have permission to access this page.');
             }
         }  
         

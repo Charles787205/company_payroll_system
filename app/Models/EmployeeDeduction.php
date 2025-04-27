@@ -11,7 +11,7 @@ class EmployeeDeduction extends Model
 
     protected $fillable = [
         'employee_id',
-        'loan_or_deduction_id',
+        'loans_and_deductions_id',
         'deduction_amount',
         'date',
     ];
@@ -21,8 +21,8 @@ class EmployeeDeduction extends Model
         return $this->belongsTo(Employee::class);
     }
 
-    public function loanOrDeductions()
+    public function loansOrDeductions()
     {
-        return $this->belongsTo(LoanOrDeduction::class, 'loan_or_deduction_id');
+        return $this->belongsTo(LoanOrDeduction::class, 'loans_and_deductions_id');
     }
 }
