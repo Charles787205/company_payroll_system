@@ -173,4 +173,73 @@ class EmployeeController extends Controller
             return redirect()->back()->withErrors('Failed to register admin: ' . $e->getMessage());
         }
     }
+
+    // Show the edit form for a specific employee
+    public function edit($id)
+    {
+        $employee = Employee::with('user', 'position')->findOrFail($id); // Fetch employee with related user and position
+        $positions = Position::all(); // Fetch all positions for the dropdown
+
+        return view('employees.edit', compact('employee', 'positions'));
+    }
+
+    // Update the employee and user details
+    public function update(Request $request, $id)
+    {
+        $employee = Employee::with('user')->findOrFail($id); // Fetch the employee with the related user
+
+        // Validate user-related data
+        $userValidatedData = $request->validate([
+            'email' => 'required|email|unique:users,email,' . $employee->user->id,
+            'first_name' => 'required|string|max:255',
+            'middle_name' => 'nullable|string|max:255',
+            'last_name' => 'required|string|max:255',
+        ]);
+
+        // Validate employee-related data
+        $validatedData = $request->validate([
+            'birthdate' => 'required|date',
+            'age' => 'nullable|integer|min:0',
+            'position_id' => 'required|exists:App\Models\Position,id',
+            'address' => 'nullable|string|max:255',
+            'salary' => 'required|numeric',
+            'hire_date' => 'required|date',
+            'sss_number' => 'nullable|string|max:15',
+            'pagibig_number' => 'nullable|string|max:15',
+            'philhealth_number' => 'nullable|string|max:20',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            // Update the user details
+            $employee->user->update([
+                'first_name' => $userValidatedData['first_name'],
+                'middle_name' => $userValidatedData['middle_name'] ?? null,
+                'last_name' => $userValidatedData['last_name'],
+                'email' => $userValidatedData['email'],
+            ]);
+
+            // Update the employee details
+            $employee->update([
+                'position_id' => $validatedData['position_id'],
+                'salary' => $validatedData['salary'],
+                'hire_date' => $validatedData['hire_date'],
+                'birthdate' => $validatedData['birthdate'],
+                'age' => $validatedData['age'],
+                'address' => $validatedData['address'],
+                'sss_number' => $validatedData['sss_number'],
+                'pagibig_number' => $validatedData['pagibig_number'],
+                'philhealth_number' => $validatedData['philhealth_number'],
+            ]);
+
+            DB::commit();
+
+            return redirect()->route('employees.index')->with('success', 'Employee updated successfully.');
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error('Failed to update employee: ' . $e->getMessage());
+            return redirect()->route('employees.edit', $id)->withErrors('Failed to update employee: ' . $e->getMessage());
+        }
+    }
 }

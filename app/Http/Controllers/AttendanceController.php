@@ -169,6 +169,24 @@ class AttendanceController extends Controller
     /**
      * Determine the payroll period based on the given date.
      */
+    public function getPayrollPeriod($date)
+    {
+        $carbonDate = \Carbon\Carbon::parse($date);
+
+        if ($carbonDate->day <= 15) {
+            // First payroll period: 1–15
+            return [
+                'from_date' => $carbonDate->startOfMonth()->format('Y-m-d'),
+                'to_date' => $carbonDate->startOfMonth()->addDays(14)->format('Y-m-d'),
+            ];
+        } else {
+            // Second payroll period: 16–end of the month
+            return [
+                'from_date' => $carbonDate->startOfMonth()->addDays(15)->format('Y-m-d'),
+                'to_date' => $carbonDate->endOfMonth()->format('Y-m-d'),
+            ];
+        }
+    }
     
     
 }
