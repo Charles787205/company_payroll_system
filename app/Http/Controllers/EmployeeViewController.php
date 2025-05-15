@@ -18,7 +18,14 @@ class EmployeeViewController extends Controller
             $employeeId = $request->user()->employee->id; // Get the authenticated employee's ID
             $employee = Employee::find($employeeId);
             $attendances = Attendance::where('employee_id', $employeeId)->get();
-            return view('employee-view.index', compact('attendances'));
+            
+            // Calculate payroll period based on current date
+            $currentDate = now();
+            $payrollPeriod = $this->getPayrollPeriod($currentDate);
+            $startDate = $payrollPeriod['from_date'];
+            $endDate = $payrollPeriod['to_date'];
+            
+            return view('employee-view.index', compact('attendances', 'startDate', 'endDate'));
         } else {
             return redirect()->route('login')->with('error', 'You must be logged in to access this page.');
         }
