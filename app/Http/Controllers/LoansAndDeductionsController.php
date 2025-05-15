@@ -46,35 +46,42 @@ class LoansAndDeductionsController extends Controller
     }
 
     // Show form to edit a loan or deduction
-    public function edit(LoansAndDeductions $loansAndDeductions)
+    public function edit($id)
     {
+        $loansAndDeduction = LoansAndDeductions::findOrFail($id);
         $employees = Employee::all();
         $types = LoansAndDeductions::getTypes();
         $frequencies = LoansAndDeductions::getFrequencies();
-        return view('loans_and_deductions.edit', compact('loansAndDeductions', 'employees', 'types', 'frequencies'));
+        return view('loans_and_deductions.edit', compact('loansAndDeduction', 'employees', 'types', 'frequencies'));
     }
 
     // Update a loan or deduction
-    public function update(Request $request, LoansAndDeductions $loansAndDeductions)
+    public function update(Request $request, $id)
     {
+        $loansAndDeduction = LoansAndDeductions::findOrFail($id);
+        
         $validatedData = $request->validate([
             'type' => 'required|in:' . implode(',', LoansAndDeductions::getTypes()),
             'employee_id' => 'required|exists:employees,id',
             'amount' => 'required|numeric|min:0',
             'remaining_balance' => 'nullable|numeric|min:0',
             'frequency' => 'required|in:' . implode(',', LoansAndDeductions::getFrequencies()),
+            'name' => 'required|string|max:255',
         ]);
 
-        $loansAndDeductions->update($validatedData);
+        $loansAndDeduction->update($validatedData);
 
-        return redirect()->route('loans_and_deductions.index')->with('success', 'Loan or deduction updated successfully.');
+        return redirect()->route('employees.show', $loansAndDeduction->employee_id)->with('success', 'Loan or deduction updated successfully.');
     }
 
     // Delete a loan or deduction
-    public function destroy(LoansAndDeductions $loansAndDeductions)
+    public function destroy($id)
     {
-        $loansAndDeductions->delete();
+        $loansAndDeduction = LoansAndDeductions::findOrFail($id);
+        $employeeId = $loansAndDeduction->employee_id;
+        
+        $loansAndDeduction->delete();
 
-        return redirect()->back()->with('success', 'Loan or deduction deleted successfully.');
+        return redirect()->route('employees.show', $employeeId)->with('success', 'Loan or deduction deleted successfully.');
     }
 }

@@ -13,8 +13,14 @@ class AttendanceController extends Controller
     // List all attendance records
     public function index()
     {
+        // Calculate payroll period based on current date
+        $currentDate = now();
+        $payrollPeriod = $this->getPayrollPeriod($currentDate);
+        $startDate = $payrollPeriod['from_date'];
+        $endDate = $payrollPeriod['to_date'];
+        
         $attendances = Attendance::with('employee')->get();
-        return view('attendance.index', compact('attendances'));
+        return view('attendance.index', compact('attendances', 'startDate', 'endDate'));
     }
 
     // Show form to create a new attendance record
@@ -168,22 +174,25 @@ class AttendanceController extends Controller
 
     /**
      * Determine the payroll period based on the given date.
+     * 
+     * @param string|\Carbon\Carbon $date Date to check
+     * @return array Array with from_date and to_date
      */
     public function getPayrollPeriod($date)
     {
         $carbonDate = \Carbon\Carbon::parse($date);
-
+        
         if ($carbonDate->day <= 15) {
             // First payroll period: 1–15
             return [
-                'from_date' => $carbonDate->startOfMonth()->format('Y-m-d'),
-                'to_date' => $carbonDate->startOfMonth()->addDays(14)->format('Y-m-d'),
+                'from_date' => $carbonDate->copy()->startOfMonth()->format('Y-m-d'),
+                'to_date' => $carbonDate->copy()->startOfMonth()->addDays(14)->format('Y-m-d'),
             ];
         } else {
             // Second payroll period: 16–end of the month
             return [
-                'from_date' => $carbonDate->startOfMonth()->addDays(15)->format('Y-m-d'),
-                'to_date' => $carbonDate->endOfMonth()->format('Y-m-d'),
+                'from_date' => $carbonDate->copy()->startOfMonth()->addDays(15)->format('Y-m-d'),
+                'to_date' => $carbonDate->copy()->endOfMonth()->format('Y-m-d'),
             ];
         }
     }
