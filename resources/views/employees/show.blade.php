@@ -15,7 +15,10 @@
     <p><strong>SSS Number:</strong> {{ $employee->sss_number }}</p>
     <p><strong>Pag-IBIG Number:</strong> {{ $employee->pagibig_number }}</p>
     <p><strong>PhilHealth Number:</strong> {{ $employee->philhealth_number }}</p>
-    <a href="{{ route('employees.edit', $employee->id) }}" class="btn btn-primary mt-4">Edit Employee Details</a>
+    <a href="{{ route('employees.edit', $employee->id) }}" class="btn-bs-primary mt-4 inline-flex items-center">
+      <span class="material-symbols-outlined mr-1">edit</span>
+      Edit Employee Details
+    </a>
   </div>
 
   <!-- Loans and Deductions -->
@@ -42,12 +45,18 @@
           <td class="border border-gray-300 px-4 py-2">{{ ucfirst($item->frequency) }}</td>
           <td class="border border-gray-300 px-4 py-2 flex justify-center w-full gap-4">
             <a href="{{ route('loans_and_deductions.edit', $item->id) }}"
-              class=" flex-1 btn btn-sm btn-warning">Edit</a>
+              class="flex-1 btn-bs-warning flex items-center justify-center">
+              <span class="material-symbols-outlined mr-1 text-sm">edit</span>
+              Edit
+            </a>
             <form class="flex w-full flex-1" action="{{ route('loans_and_deductions.destroy', $item->id) }}"
               method="POST" class="inline">
               @csrf
               @method('DELETE')
-              <button type="submit" class="flex w-full justify-center btn btn-sm btn-danger">Delete</button>
+              <button type="submit" class="flex w-full justify-center btn-bs-danger items-center">
+                <span class="material-symbols-outlined mr-1 text-sm">delete</span>
+                Delete
+              </button>
             </form>
           </td>
         </tr>
@@ -98,7 +107,10 @@
           <option value="bi-weekly">Bi-Weekly</option>
         </select>
       </div>
-      <button type="submit" class="btn btn-primary">Add</button>
+      <button type="submit" class="btn-bs-primary flex items-center">
+        <span class="material-symbols-outlined mr-1">add_circle</span>
+        Add
+      </button>
     </form>
   </div>
 </x-app-layout>

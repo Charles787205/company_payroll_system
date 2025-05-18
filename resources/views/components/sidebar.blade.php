@@ -8,7 +8,7 @@
     <!-- sidebar toggle -->
     <div class="text-right hidden md:block mb-4">
       <button id="sideBarHideBtn">
-        <i class="fad fa-times-circle"></i>
+        <span class="material-symbols-outlined">close</span>
       </button>
     </div>
     <!-- end sidebar toggle -->
@@ -19,57 +19,52 @@
     @if (Auth::user() && strtolower(Auth::user()->employee->position->title) === 'admin')
     <!-- Admin Links -->
     <!-- Dashboard -->
-    <a href="/" class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500">
-      <i class="fad fa-tachometer-alt text-xs mr-2"></i>
+    <a href="/" class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500 flex items-center">
+      <span class="material-symbols-outlined text-lg mr-2">dashboard</span>
       Dashboard
     </a>
     <!-- Employees -->
     <a href="/employees"
-      class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500">
-      <i class="fad fa-users text-xs mr-2"></i>
+      class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500 flex items-center">
+      <span class="material-symbols-outlined text-lg mr-2">group</span>
       Employees
     </a>
     <!-- Positions -->
     <a href="/positions"
-      class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500">
-      <i class="fad fa-briefcase text-xs mr-2"></i>
+      class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500 flex items-center">
+      <span class="material-symbols-outlined text-lg mr-2">work</span>
       Positions
     </a>
     <!-- Payroll -->
     <a href="/payrolls"
-      class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500">
-      <i class="fad fa-file-invoice-dollar text-xs mr-2"></i>
+      class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500 flex items-center">
+      <span class="material-symbols-outlined text-lg mr-2">payments</span>
       Payroll
     </a>
     <!-- Loans and Deductions -->
     <a href="/loans_and_deductions"
-      class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500">
-      <i class="fad fa-balance-scale text-xs mr-2"></i>
+      class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500 flex items-center">
+      <span class="material-symbols-outlined text-lg mr-2">account_balance</span>
       Loans and Deductions
     </a>
-    <!-- Attendance -->
-    <a href="/attendance"
-      class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500">
-      <i class="fad fa-calendar-check text-xs mr-2"></i>
-      Attendance
-    </a>
+    <!-- Attendance option removed for admin -->
     @else
     <!-- Non-Admin Links -->
     <!-- Attendance -->
-    <a href="/" class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500">
-      <i class="fad fa-calendar-check text-xs mr-2"></i>
+    <a href="/" class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500 flex items-center">
+      <span class="material-symbols-outlined text-lg mr-2">calendar_month</span>
       Attendance
     </a>
     <!-- Payroll -->
     <a href="/employee-view/payrolls"
-      class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500">
-      <i class="fad fa-file-invoice-dollar text-xs mr-2"></i>
+      class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500 flex items-center">
+      <span class="material-symbols-outlined text-lg mr-2">receipt_long</span>
       Payroll
     </a>
     <!-- Loans and Deductions -->
     <a href="/employee-view/loans_and_deductions"
-      class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500">
-      <i class="fad fa-balance-scale text-xs mr-2"></i>
+      class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500 flex items-center">
+      <span class="material-symbols-outlined text-lg mr-2">savings</span>
       Loans and Deductions
     </a>
     @endif

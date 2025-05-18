@@ -49,7 +49,8 @@
           <!-- actions -->
           <th class="w-1/4 mb-4 text-xs font-extrabold tracking-wider text-right">
             <form action="{{ route('employees.show', $employee->id) }}" method="GET">
-              <button type="submit" class="btn btn-primary text-sm px-4 py-2 ml-auto">
+              <button type="submit" class="btn-bs-primary text-sm px-4 py-2 ml-auto flex items-center justify-center">
+                <span class="material-symbols-outlined mr-1 text-sm">visibility</span>
                 View Details
               </button>
             </form>

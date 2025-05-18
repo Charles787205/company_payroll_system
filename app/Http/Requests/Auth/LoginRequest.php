@@ -59,7 +59,32 @@ class LoginRequest extends FormRequest
      */
     public function ensureIsNotRateLimited(): void
     {
-        if (! RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
+        // Get the current number of attempts
+        $attempts = RateLimiter::attempts($this->throttleKey());
+        
+        // Define our tiered lockout system
+        if ($attempts >= 3 && $attempts < 4) {
+            // After 3 failed attempts - 30 seconds lockout
+            $this->checkRateLimit(1, 30);
+        } elseif ($attempts >= 4 && $attempts < 5) {
+            // After 4 failed attempts - 1 minute lockout
+            $this->checkRateLimit(1, 60);
+        } elseif ($attempts >= 5) {
+            // After 5 failed attempts - 30 minutes lockout
+            $this->checkRateLimit(1, 1800);
+        }
+    }
+
+    /**
+     * Check if the request is rate limited and throw an exception if it is.
+     *
+     * @param int $maxAttempts
+     * @param int $decaySeconds
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    protected function checkRateLimit(int $maxAttempts, int $decaySeconds): void
+    {
+        if (! RateLimiter::tooManyAttempts($this->throttleKey(), $maxAttempts)) {
             return;
         }
 
@@ -67,11 +92,22 @@ class LoginRequest extends FormRequest
 
         $seconds = RateLimiter::availableIn($this->throttleKey());
 
-        throw ValidationException::withMessages([
-            'email' => trans('auth.throttle', [
+        $message = '';
+        if ($decaySeconds == 30) {
+            $message = 'Too many login attempts. Please wait 30 seconds.';
+        } elseif ($decaySeconds == 60) {
+            $message = 'Too many login attempts. Please wait 1 minute.';
+        } elseif ($decaySeconds == 1800) {
+            $message = 'Too many login attempts. Please wait 30 minutes.';
+        } else {
+            $message = trans('auth.throttle', [
                 'seconds' => $seconds,
                 'minutes' => ceil($seconds / 60),
-            ]),
+            ]);
+        }
+
+        throw ValidationException::withMessages([
+            'email' => $message,
         ]);
     }
 

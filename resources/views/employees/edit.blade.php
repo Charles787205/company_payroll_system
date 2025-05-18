@@ -99,6 +99,16 @@
         value="{{ old('philhealth_number', $employee->philhealth_number) }}" class="form-input w-full">
     </div>
 
-    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Update Employee</button>
+    <div class="flex gap-4">
+      <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded flex items-center">
+        <span class="material-symbols-outlined mr-1">save</span>
+        Update Employee
+      </button>
+      
+      <a href="{{ route('employees.index') }}" class="bg-gray-500 text-white px-4 py-2 rounded flex items-center">
+        <span class="material-symbols-outlined mr-1">arrow_back</span>
+        Back to List
+      </a>
+    </div>
   </form>
 </x-app-layout>

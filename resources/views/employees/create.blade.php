@@ -107,9 +107,95 @@
         placeholder="123-456-789-012">
     </div>
 
-    <button type="submit" class="btn-bs-primary ml-auto">
+    <button type="submit" class="btn-bs-primary ml-auto flex items-center">
+      <span class="material-symbols-outlined mr-1">person_add</span>
       Create Employee
     </button>
   </form>
 
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const birthdateInput = document.getElementById('birthdate');
+      const ageInput = document.getElementById('age');
+      const form = document.querySelector('form');
+
+      // Calculate and validate age when birthdate changes
+      birthdateInput.addEventListener('change', function () {
+        const birthdate = new Date(this.value);
+        const today = new Date();
+
+        // Calculate age
+        let age = today.getFullYear() - birthdate.getFullYear();
+        const monthDiff = today.getMonth() - birthdate.getMonth();
+
+        // Adjust age if birthday hasn't occurred yet this year
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthdate.getDate())) {
+          age--;
+        }
+
+        // Set the calculated age
+        ageInput.value = age;
+
+        // Show warning if under 18
+        if (age < 18) {
+          alert('Employee must be at least 18 years old.');
+          this.value = ''; // Clear the birthdate field
+          ageInput.value = ''; // Clear the age field
+        }
+      });
+
+      // Validate form submission
+      form.addEventListener('submit', function (event) {
+        const birthdate = new Date(birthdateInput.value);
+        const today = new Date();
+
+        // Calculate age
+        let age = today.getFullYear() - birthdate.getFullYear();
+        const monthDiff = today.getMonth() - birthdate.getMonth();
+
+        // Adjust age if birthday hasn't occurred yet this year
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthdate.getDate())) {
+          age--;
+        }
+
+        // Check if employee is at least 18
+        if (age < 18) {
+          event.preventDefault();
+          alert('Employee must be at least 18 years old.');
+          return false;
+        }
+
+        // Check if age field matches calculated age
+        if (parseInt(ageInput.value) !== age) {
+          event.preventDefault();
+          alert('Age does not match the calculated age from birthdate.');
+          ageInput.value = age; // Set the correct age
+          return false;
+        }
+      });
+
+      // Update age when user manually changes it
+      ageInput.addEventListener('change', function () {
+        if (!birthdateInput.value) return;
+
+        const birthdate = new Date(birthdateInput.value);
+        const today = new Date();
+
+        // Calculate age
+        let age = today.getFullYear() - birthdate.getFullYear();
+        const monthDiff = today.getMonth() - birthdate.getMonth();
+
+        // Adjust age if birthday hasn't occurred yet this year
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthdate.getDate())) {
+          age--;
+        }
+
+        // Check if age matches calculated age
+        if (parseInt(this.value) !== age) {
+          alert('Age does not match the calculated age from birthdate. Auto-correcting.');
+          this.value = age;
+        }
+      });
+    });
+  </script>
 </x-app-layout>

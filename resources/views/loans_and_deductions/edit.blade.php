@@ -70,12 +70,14 @@
 
     <div class="flex items-center justify-between">
       <button type="submit"
-        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline flex items-center">
+        <span class="material-symbols-outlined mr-1">save</span>
         Update
       </button>
       <a href="{{ route('employees.show', $loansAndDeduction->employee_id) }}"
-        class="text-blue-500 hover:text-blue-700">
-        Cancel
+        class="text-blue-500 hover:text-blue-700 flex items-center">
+        <span class="material-symbols-outlined mr-1">arrow_back</span>
+        Back to Employee
       </a>
     </div>
   </form>

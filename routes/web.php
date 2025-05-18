@@ -39,6 +39,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get("/employee-view/loans_and_deductions", [EmployeeViewController::class, 'showLoansAndDeductions'])->name('employee-view.loans-and-deductions');
     Route::post('/employee-view/store_attendances', [EmployeeViewController::class, 'storeAttendances'])->name('employee-view.store-attendances');
     Route::get('/employee-view/{payroll}/attendances', [EmployeeViewController::class, 'showAttendances'])->name('employee-view.show-attendances');
+    Route::get('/employee-view/{payroll}/deductions', [EmployeeViewController::class, 'showDeductions'])->name('employee-view.show-deductions');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

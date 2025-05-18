@@ -38,10 +38,43 @@ class EmployeeController extends Controller
             'middle_name' => 'nullable|string|max:255',
             'last_name' => 'required|string|max:255',
         ]);
+        
+        // Add custom validation rule for birthdate (at least 18 years ago)
+        $request->validate([
+            'birthdate' => [
+                'required',
+                'date',
+                function ($attribute, $value, $fail) {
+                    $birthdate = new \DateTime($value);
+                    $today = new \DateTime();
+                    $diff = $birthdate->diff($today);
+                    
+                    if ($diff->y < 18) {
+                        $fail('Employee must be at least 18 years old.');
+                    }
+                }
+            ],
+        ]);
+        
+        // Add custom validation rule to check if age matches calculated age from birthdate
+        $request->validate([
+            'age' => [
+                'required',
+                'integer',
+                'min:18',
+                function ($attribute, $value, $fail) use ($request) {
+                    $birthdate = new \DateTime($request->birthdate);
+                    $today = new \DateTime();
+                    $diff = $birthdate->diff($today);
+                    
+                    if ((int)$value !== $diff->y) {
+                        $fail('Age must match the calculated age from birthdate.');
+                    }
+                }
+            ],
+        ]);
+        
         $validatedData = $request->validate([
-            'birthdate' => 'required|date',
-            'age' => 'nullable|integer|min:0',
-            'first_name' => 'required|string|max:255',
             'position_id' => 'required|exists:App\Models\Position,id',
             'address' => 'nullable|string|max:255',
             'salary' => 'required|numeric',
@@ -60,7 +93,7 @@ class EmployeeController extends Controller
                     'middle_name' => $userValidatedData['middle_name'] ?? null, // Handle nullable middle name
                     'last_name' => $userValidatedData['last_name'],
                     'email' => $userValidatedData['email'],
-                    'password' => bcrypt(preg_replace('/\s+/', '_', trim($userValidatedData['first_name'])) . $validatedData['age']), // Combine modified first name and age for password
+                    'password' => bcrypt(preg_replace('/\s+/', '_', trim($userValidatedData['first_name'])) . $request->age), // Combine modified first name and age for password
                 ]);
 
                 Employee::create([
@@ -68,12 +101,12 @@ class EmployeeController extends Controller
                     'position_id' => $validatedData['position_id'],
                     'salary' => $validatedData['salary'],
                     'hire_date' => $validatedData['hire_date'],
-                    'birthdate' => $validatedData['birthdate'],
-                    'age' => $validatedData['age'],
-                    'address' => $validatedData['address'],
-                    'sss_number' => $validatedData['sss_number'],
-                    'pagibig_number' => $validatedData['pagibig_number'],
-                    'philhealth_number' => $validatedData['philhealth_number'],
+                    'birthdate' => $request->birthdate,
+                    'age' => $request->age,
+                    'address' => $validatedData['address'] ?? null,
+                    'sss_number' => $validatedData['sss_number'] ?? null,
+                    'pagibig_number' => $validatedData['pagibig_number'] ?? null,
+                    'philhealth_number' => $validatedData['philhealth_number'] ?? null,
                 ]);
 
                 DB::commit();

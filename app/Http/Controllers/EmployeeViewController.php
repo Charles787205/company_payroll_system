@@ -183,6 +183,23 @@ class EmployeeViewController extends Controller
             'attendances' => $attendances,
         ]);
     }
-   
-    
+    public function showDeductions(Payroll $payroll)
+    {
+        // Get the employee's loans and deductions
+        $employeeDeductions = $payroll->employee->loansAndDeductions;
+        
+        // Map to a format suitable for the frontend
+        $formattedDeductions = $employeeDeductions->map(function ($deduction) {
+            return [
+                'id' => $deduction->id,
+                'description' => $deduction->description,
+                'amount' => number_format($deduction->amount, 2),
+                'date' => $deduction->created_at->format('Y-m-d')
+            ];
+        });
+        
+        return response()->json([
+            'deductions' => $formattedDeductions,
+        ]);
+    }
 }
